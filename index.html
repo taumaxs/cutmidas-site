@@ -218,6 +218,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 .mv:hover video { transform: scale(1.03); }
 .mv figcaption b { display: block; font-size: 15px; } .mv figcaption span { color: var(--muted); font-size: 13.5px; line-height: 1.4; display: block; margin-top: 2px; }
 .rhythm { margin-top: clamp(40px, 5vw, 56px); display: grid; gap: 18px; }
+.sl-opts { justify-content: center; margin-top: 30px; }
 .pr-duo.wide { --mon-h: auto; }
 .pr-duo.wide .ph { aspect-ratio: 16 / 9; height: auto; width: min(44vw, 540px); border-radius: 18px; }
 @media (max-width: 720px) { .pr-duo.wide { flex-direction: column; } .pr-duo.wide .pr-ph { width: 100%; } .pr-duo.wide .ph { width: 100%; } .pr-duo.wide .pr-arrow { transform: rotate(90deg); } }
@@ -541,12 +542,13 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 
   <!-- CÂMERA LENTA -->
   <section class="sec" id="camera-lenta">
-    <div class="sec-h pr-head"><div class="kick" style="color:#9fe04a">Câmera lenta</div><h2>Qualquer take vira <em>câmera lenta</em>.</h2><p class="lead">Não importa como foi gravado. O CUTMIDAS cria os quadros que faltam e deixa o movimento suave. Aqui, um take de 24 quadros por segundo, gravado em velocidade normal, ficou 8 vezes mais lento e continua fluido.</p></div>
+    <div class="sec-h pr-head"><div class="kick" style="color:#9fe04a">Câmera lenta</div><h2>Qualquer take vira <em>câmera lenta</em>.</h2><p class="lead">Não importa como foi gravado. O CUTMIDAS cria os quadros que faltam e deixa o movimento suave. Aqui, um take de 24 quadros por segundo, gravado em velocidade normal, ficou 4 vezes mais lento e continua fluido. Escolha embaixo até quantas vezes mais lento.</p></div>
     <div class="pr-duo wide" id="sl-duo">
       <figure class="pr-ph"><div class="ph" style="background-image:url(media/lenta-normal.jpg)"><video id="sl-a" src="media/lenta-normal.mp4" poster="media/lenta-normal.jpg" muted loop playsinline preload="metadata"></video></div><figcaption>Como foi gravado · 24 fps · velocidade real</figcaption></figure>
       <span class="pr-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-      <figure class="pr-ph after"><div class="ph" style="background-image:url(media/lenta-lenta.jpg)"><video id="sl-b" src="media/lenta-lenta.mp4" poster="media/lenta-lenta.jpg" muted loop playsinline preload="metadata"></video></div><figcaption>Câmera lenta · 8× mais lento</figcaption></figure>
+      <figure class="pr-ph after"><div class="ph" style="background-image:url(media/lenta-lenta.jpg)"><video id="sl-b" src="media/lenta-lenta.mp4" poster="media/lenta-lenta.jpg" muted playsinline preload="metadata"></video></div><figcaption id="sl-cap">Câmera lenta · 4× mais lento</figcaption></figure>
     </div>
+    <div class="posw sl-opts"><span>Câmera lenta</span><div class="seg" id="sl-seg" role="group" aria-label="Quantas vezes mais lento"><button data-m="4" aria-pressed="true">4× mais lento</button><button data-m="8" aria-pressed="false">8× mais lento</button><button data-m="16" aria-pressed="false">16× mais lento</button></div></div>
   </section>
 
   <!-- REAL RESULTS -->
@@ -686,13 +688,25 @@ document.getElementById("pr-alt").textContent = VENDA.avista;
 
 /* ---------- câmera lenta: normal | slow, same moment ---------- */
 {
-  const a = document.getElementById("sl-a"), b = document.getElementById("sl-b");
+  const a = document.getElementById("sl-a"), b = document.getElementById("sl-b"), cap = document.getElementById("sl-cap"), seg = document.getElementById("sl-seg");
+  let on = false;
+  const restart = () => { try { a.currentTime = 0; b.currentTime = 0; } catch (e) {} if (on) { a.play().catch(() => {}); b.play().catch(() => {}); } };
+  // the slow one plays once; when it ends both start again together (the real-speed one repeats 4, 8 or 16 times meanwhile)
+  b.addEventListener("ended", restart);
+  function setSlow(m) {
+    const f = m === 4 ? "media/lenta-lenta" : `media/lenta-lenta-${m}`;
+    b.pause(); b.poster = f + ".jpg"; b.src = f + ".mp4"; b.preload = "auto"; b.load();
+    cap.textContent = `Câmera lenta · ${m}× mais lento`;
+    seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.m === String(m)));
+    b.addEventListener("loadeddata", restart, { once: true });
+  }
+  seg.addEventListener("click", (e) => { const x = e.target.closest("button"); if (x) setSlow(+x.dataset.m); });
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(([en]) => {
-      if (en.isIntersecting) { a.preload = b.preload = "auto"; a.currentTime = 0; b.currentTime = 0; a.play().catch(() => {}); b.play().catch(() => {}); }
-      else { a.pause(); b.pause(); }
+      on = en.isIntersecting;
+      if (on) { a.preload = b.preload = "auto"; restart(); } else { a.pause(); b.pause(); }
     }, { threshold: 0.35 }).observe(document.getElementById("sl-duo"));
-  } else { a.play().catch(() => {}); b.play().catch(() => {}); }
+  } else { on = true; restart(); }
 }
 
 /* ---------- ao vivo: short cuts of the Premiere screen. Put the files in media/ and fill these two names ---------- */
