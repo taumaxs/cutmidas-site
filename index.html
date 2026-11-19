@@ -230,6 +230,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 .av figcaption { font: 800 13px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); text-align: center; }
 .mods { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
 .mods div { background: var(--bg-2); padding: 24px 22px 26px; border-top: 2px solid var(--c); color: var(--muted); font-size: 15px; line-height: 1.5; }
+.mods-more { margin: clamp(28px, 4vw, 40px) auto 0; max-width: 60ch; text-align: center; color: var(--muted); font-size: 17px; line-height: 1.55; }
+.mods-more b { display: block; color: var(--ink); font: 800 clamp(22px, 3vw, 30px) var(--display); letter-spacing: -.02em; margin-bottom: 6px; }
+.mods-more b::after { content: ""; display: block; width: 48px; height: 3px; border-radius: 2px; background: var(--green); margin: 14px auto 0; }
 .mods b { display: block; color: var(--ink); font: 700 18px var(--display); margin-bottom: 6px; }
 @media (max-width: 1000px) { .mods { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .mods { grid-template-columns: minmax(0, 1fr); } }
@@ -584,6 +587,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
       <div style="--c:#2dd4bf"><b>Biblioteca</b>Setas, elementos e molduras prontos para usar.</div>
       <div style="--c:#c6cad3"><b>Tela de palavras</b>O texto da fala em tela cheia, uma palavra por vez.</div>
     </div>
+    <p class="mods-more"><b>Tudo isso, e muito mais.</b> Dentro do plugin tem outras ferramentas e ajustes feitos para facilitar o seu trabalho de edição, do primeiro corte ao vídeo pronto.</p>
   </section>
 
   <!-- FEATURES -->
