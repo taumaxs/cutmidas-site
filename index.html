@@ -12,6 +12,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0b0a'/%3E%3Cpath d='M40 20a14 14 0 1 0 0 24' fill='none' stroke='%231fd17a' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>[hidden]{display:none!important}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>CUTMIDAS | Edição automática para Premiere Pro</title>
+<link rel="icon" type="image/png" href="media/cutmidas-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&family=Anton&family=Instrument+Serif:ital@0;1&family=Caveat:wght@700&family=Imperial+Script&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 /* Layout: the hero holds a small Premiere (CUTMIDAS panel with icons + Edição automática, program monitor, timeline)
@@ -71,7 +72,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
 .top .w { display: flex; align-items: center; gap: 24px; height: var(--top-h); }
 .logo { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: .02em; text-decoration: none; }
-.logo b { color: var(--green); }
+.logo { display: inline-flex; align-items: center; } .logo img { height: 38px; width: auto; display: block; }
 .top nav { display: flex; gap: 26px; margin-left: auto; font-size: 14.5px; color: var(--muted); }
 .top nav a { text-decoration: none; transition: color .2s; } .top nav a:hover { color: var(--ink); }
 @media (max-width: 960px) { .top nav { display: none; } .top .buy { margin-left: auto; } }
@@ -350,6 +351,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 .pc-l .safe { text-align: left; }
 @media (max-width: 760px) { .pcard.wide { grid-template-columns: minmax(0, 1fr); } }
 .pcard { border-radius: 22px; padding: 32px; background: radial-gradient(120% 80% at 100% 0%, rgba(31, 209, 122, .16), transparent 60%), var(--panel); border: 1.5px solid var(--green); display: grid; gap: 20px; box-shadow: 0 50px 120px -60px rgba(31, 209, 122, .45); }
+.hero-logo { display: block; width: clamp(190px, 26vw, 300px); height: auto; margin: 0 0 22px -8px; }
+.pc-logo { display: block; width: 210px; max-width: 70%; height: auto; margin: 0 0 6px -6px; }
+.f-brand { display: inline-flex; align-items: center; gap: 14px; } .f-brand img { height: 34px; width: auto; } .f-brand em { font-style: normal; }
 .pcard .tg { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--green); font-weight: 800; }
 .pcard .val { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .pcard .val b { font-family: var(--display); font-size: clamp(48px, 6vw, 66px); font-weight: 800; letter-spacing: -.03em; line-height: 1; }
@@ -386,7 +390,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 
 <header class="top">
   <div class="w">
-    <a class="logo" href="#topo">CUT<b>MIDAS</b></a>
+    <a class="logo" href="#topo"><img src="media/cutmidas-lockup.png" alt="CUTMIDAS" height="38"></a>
     <nav aria-label="Seções"><a href="#movimentos">Movimentos</a><a href="#estilos">Estilos</a><a href="#na-pratica">Na prática</a><a href="#camera-lenta">Câmera lenta</a><a href="#resultados">Resultados</a><a href="#preco">Preço</a><a href="#duvidas">Dúvidas</a></nav>
     <a class="buy" href="#preco">Quero o CUTMIDAS</a>
   </div>
@@ -396,6 +400,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
   <!-- HERO: the automatic edit happening in a small Premiere -->
   <div class="scene" id="scene">
     <div class="hero">
+      <img class="hero-logo" src="media/cutmidas-lockup.png" alt="CUTMIDAS">
       <div class="kick">Plugin para Adobe Premiere Pro · Windows e Mac</div>
       <h1>Você grava. O CUTMIDAS <em>edita</em>.</h1>
       <p class="lead">Um clique em Editar o vídeo e ele corta, mexe a câmera, coloca legendas, destaques e efeitos sonoros. Tudo em camadas na sua timeline.</p>
@@ -611,7 +616,8 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
     <div class="price">
       <div class="pcard wide">
         <div class="pc-l">
-          <div class="tg">CUTMIDAS · licença completa</div>
+          <img class="pc-logo" src="media/cutmidas-lockup.png" alt="CUTMIDAS">
+          <div class="tg">Licença completa</div>
           <div class="val"><b id="pr-main">R$ 147</b><span id="pr-alt">à vista ou em até 12× no cartão</span></div>
           <a class="buy big" href="#preco">Comprar agora <span class="arr" aria-hidden="true">→</span></a>
           <p class="safe">Compra segura pela Kiwify · chave de licença por e-mail na hora</p>
@@ -654,7 +660,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 
   <div class="stk" id="stk"><a class="buy" href="#preco">Quero o CUTMIDAS <span class="arr" aria-hidden="true">→</span></a></div>
 
-<footer><span>CUTMIDAS · @taumaxs by TURGGO</span><span>Adobe e Premiere Pro são marcas da Adobe Inc. Este produto não é afiliado nem endossado pela Adobe.</span></footer>
+<footer><span class="f-brand"><img src="media/cutmidas-lockup.png" alt="CUTMIDAS"><em>@taumaxs by TURGGO</em></span><span>Adobe e Premiere Pro são marcas da Adobe Inc. Este produto não é afiliado nem endossado pela Adobe.</span></footer>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
