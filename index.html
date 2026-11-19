@@ -72,6 +72,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 .ghost:hover span { transform: translateY(3px); border-color: var(--muted); }
 
 /* top bar */
+@media (max-width: 820px) { .top, .pill, .snd, .clip .zoom { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; } .top { background: var(--bg) !important; } }
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
 .top .w { display: flex; align-items: center; gap: 24px; height: var(--top-h); }
 .logo { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: .02em; text-decoration: none; }
@@ -586,14 +587,18 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
   <section class="sec" id="tudo">
     <div class="sec-h pr-head"><div class="kick">Tudo num só lugar</div><h2>Tudo o que você precisa para editar, <em>sem sair do Premiere</em>.</h2><p class="lead">Menos programas abertos, menos arquivos soltos, menos tempo perdido. Você ganha agilidade e para de gastar tempo com o que o plugin resolve por você.</p></div>
     <div class="mods">
-      <div style="--c:#ff5a4e"><b>Cortes</b>Tira respiração, pausa e repetição. A fala fica colada.</div>
+      <div style="--c:#16c76e"><b>Edição automática</b>Um clique faz tudo: corta, move a câmera, legenda e põe som. Você escolhe o que entra e pode parar para conferir os cortes.</div>
+      <div style="--c:#ff5a4e"><b>Cortes</b>Tira respiração, pausa e repetição. A fala fica colada, e dá para fechar os espaços vazios.</div>
       <div style="--c:#ff9a1f"><b>Movimentos</b>Zooms no rosto e vários movimentos de câmera, em vários ritmos.</div>
       <div style="--c:#3ea8ff"><b>Legendas</b>Dezenas de estilos, no tempo da fala, com destaque nas frases fortes.</div>
       <div style="--c:#f2c94c"><b>Títulos</b>Títulos animados prontos para colocar no cursor.</div>
-      <div style="--c:#a07bff"><b>SFX</b>Um som para cada movimento, baixinho, embaixo da sua voz.</div>
-      <div style="--c:#9fe04a"><b>Câmera lenta</b>Qualquer take em câmera lenta, sem refazer a gravação.</div>
-      <div style="--c:#2dd4bf"><b>Biblioteca</b>Setas, elementos e molduras prontos para usar.</div>
+      <div style="--c:#a07bff"><b>SFX</b>Um som para cada movimento, baixinho, embaixo da sua voz. Mais de 60 sons próprios, e você usa a sua pasta também.</div>
+      <div style="--c:#9fe04a"><b>Câmera lenta</b>Qualquer take em câmera lenta fluida, sem refazer a gravação.</div>
+      <div style="--c:#7ee0b5"><b>Low shutter</b>O rastro suave de movimento do obturador lento, aplicado no take que você escolher.</div>
+      <div style="--c:#4dd0e1"><b>Efeitos</b>Glow, halation, glitch, elétrico, raios de luz e outros, direto no painel Efeitos do Premiere (no Windows).</div>
+      <div style="--c:#2dd4bf"><b>Assets e molduras</b>Setas, elementos, molduras e overlays prontos, da sua pasta ou da biblioteca, direto na timeline.</div>
       <div style="--c:#c6cad3"><b>Tela de palavras</b>O texto da fala em tela cheia, uma palavra por vez.</div>
+      <div style="--c:#ffffff"><b>Cancelar e desfazer</b>Cancela a qualquer momento, trabalha numa cópia e tudo fica em camadas para você mexer depois.</div>
     </div>
     <p class="mods-more"><b>Tudo isso, e muito mais.</b> Dentro do plugin tem outras ferramentas e ajustes feitos para facilitar o seu trabalho de edição, do primeiro corte ao vídeo pronto.</p>
   </section>
@@ -681,10 +686,10 @@ document.getElementById("pr-alt").textContent = VENDA.avista;
 {
   const a = document.getElementById("pr-a"), b = document.getElementById("pr-b");
   // the complete one follows the one with nothing
-  (function sync() {
-    if (!a.paused && b.readyState >= 2 && Math.abs(b.currentTime - a.currentTime) > 0.15) { try { b.currentTime = a.currentTime; } catch (e) {} }
-    requestAnimationFrame(sync);
-  })();
+  // checked a few times a second (not every frame): seeking a video on every frame made both stutter on phones
+  setInterval(() => {
+    if (!a.paused && a.readyState >= 3 && b.readyState >= 3 && Math.abs(b.currentTime - a.currentTime) > 0.35) { try { b.currentTime = a.currentTime; } catch (e) {} }
+  }, 400);
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(([en]) => {
       if (en.isIntersecting) { a.preload = b.preload = "auto"; a.play().catch(() => {}); b.play().catch(() => {}); }
@@ -760,7 +765,8 @@ const ease = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
 /* ---------- smooth scroll ---------- */
 let lenis = null;
-if (!reduce && window.Lenis) {
+const touch = matchMedia("(pointer: coarse)").matches;
+if (!reduce && !touch && window.Lenis) {
   lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
   const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
   requestAnimationFrame(raf);
@@ -848,6 +854,9 @@ const tc = (s) => { const f = Math.round(s * 30), ss = Math.floor(f / 30), ff = 
 /* ---------- the state of the edit: g goes 0 (raw) -> 4 (done), one unit per step ---------- */
 const rows = [...document.querySelectorAll(".cs")];
 const ph = $("ph"), vEdit = $("v-edit"), vRaw = $("v-raw");
+let phW = 0, phH = 0;
+const sizePh = () => { phW = ph.clientWidth; phH = ph.clientHeight; };
+sizePh(); addEventListener("resize", sizePh);
 let g = 0, act = -1;
 const STEP = [["Cortes", "--c-cut"], ["Movimentos", "--c-mov"], ["Legendas e destaques", "--c-cap"], ["SFX", "--c-sfx"]];
 function render(G, active) {
@@ -888,7 +897,8 @@ function frame() {
   if (g >= 1 && g < 2 && m < 0.9) {
     const [x, y, z] = camAt(tr), zi = ease(clamp((m - 0.5) / 0.4)), sc = 1 + (1 / z - 1) * zi;
     cam.style.opacity = clamp((m - 0.04) / 0.1) * (1 - zi);
-    cam.style.transform = `translate(${x * ph.clientWidth}px, ${y * ph.clientHeight}px)`;
+    if (!phW) sizePh();
+    cam.style.transform = `translate(${x * phW}px, ${y * phH}px)`;
     cam.style.width = `${z * 100}%`; cam.style.height = `${z * 100}%`;
     vRaw.style.transform = zi > 0 ? `translate(${-x * sc * zi * 100}%, ${-y * sc * zi * 100}%) scale(${sc})` : "";
   } else { cam.style.opacity = 0; vRaw.style.transform = ""; }
@@ -979,16 +989,24 @@ const live = { scene: true, styles: false };
 
 /* ---------- videos play only while on screen ---------- */
 const groups = [[$("rig"), [vEdit, vRaw], "scene"], [$("sph"), [sVid], "styles"]];
+const phone = matchMedia("(max-width: 820px)").matches;
+// the six move clips are small: fetch them a bit before the section appears, so they start right away
+if ("IntersectionObserver" in window) {
+  const pre = new IntersectionObserver(([en]) => { if (!en.isIntersecting) return; document.querySelectorAll(".mv video").forEach((v) => { v.preload = "auto"; }); pre.disconnect(); }, { rootMargin: "900px 0px" });
+  pre.observe($("movimentos"));
+}
 document.querySelectorAll(".mv .scr, .clip").forEach((el) => groups.push([el, [el.querySelector("video")], null]));
 if ("IntersectionObserver" in window) {
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     const gr = groups.find((x) => x[0] === e.target); if (!gr) return;
     if (gr[2]) live[gr[2]] = e.isIntersecting;
+    // on phones the small clips (moves, results) play only when mostly in view, so at most two decode at once
+    const small = phone && gr[2] === null, play = small ? e.intersectionRatio >= 0.55 : e.isIntersecting, stop = small ? e.intersectionRatio < 0.3 : !e.isIntersecting;
     gr[1].forEach((v) => {
-      if (e.isIntersecting && !reduce) { if (v.preload === "none") v.preload = "auto"; v.play().catch(() => {}); }
-      else if (!e.isIntersecting) v.pause();
+      if (play && !reduce) { if (v.preload === "none") v.preload = "auto"; v.play().catch(() => {}); }
+      else if (stop) v.pause();
     });
-  }), { threshold: 0.15 });
+  }), { threshold: [0, 0.15, 0.3, 0.55] });
   groups.forEach((gr) => io.observe(gr[0]));
 } else groups.forEach((gr) => gr[1].forEach((v) => v.play().catch(() => {})));
 if (reduce) groups.forEach((gr) => gr[0].addEventListener("click", (e) => { if (e.target.closest("button")) return; gr[1].forEach((v) => (v.paused ? v.play() : v.pause())); }));
