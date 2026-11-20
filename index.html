@@ -362,8 +362,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 .pc-logo { display: block; width: 210px; max-width: 70%; height: auto; margin: 0 0 6px -6px; }
 .f-brand { display: inline-flex; align-items: center; gap: 14px; } .f-brand img { height: 34px; width: auto; } .f-brand em { font-style: normal; }
 .pcard .tg { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--green); font-weight: 800; }
-.pcard .val { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.pcard .val b { font-family: var(--display); font-size: clamp(48px, 6vw, 66px); font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.pcard .val { display: grid; gap: 6px; justify-items: start; }
+.pcard .val em { font-style: normal; font: 700 clamp(18px, 2.4vw, 22px) var(--display); color: var(--green); letter-spacing: -.01em; }
+.pcard .val b { white-space: nowrap; font-family: var(--display); font-size: clamp(44px, 6vw, 66px); font-weight: 800; letter-spacing: -.03em; line-height: 1; }
 .pcard .val span { color: var(--muted); }
 .pcard ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 15px; }
 .pcard li { display: grid; grid-template-columns: 22px minmax(0, 1fr); }
@@ -630,7 +631,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
         <div class="pc-l">
           <img class="pc-logo" src="media/cutmidas-lockup.png" alt="CUTMIDAS">
           <div class="tg">Licença completa</div>
-          <div class="val"><b id="pr-main">12x de R$ 15,20</b><span id="pr-alt">ou R$ 147 à vista no Pix. Parcelado no cartão com acréscimo.</span></div>
+          <div class="val"><em id="pr-n">12x de</em><b id="pr-main">R$ 15,20</b><span id="pr-alt">ou R$ 147 à vista no Pix. Parcelado no cartão com acréscimo.</span></div>
           <a class="buy big" href="#preco">Comprar agora <span class="arr" aria-hidden="true">→</span></a>
           <p class="safe">Compra segura pela Kiwify · chave de licença por e-mail na hora</p>
         </div>
@@ -680,13 +681,14 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 <script>
 /* ---------- edit here ---------- */
 // Checkout link (Kiwify) and the price shown. The price is still a placeholder.
-const VENDA = { link: "https://pay.kiwify.com.br/cykdGQy", parcela: "12x de R$ 15,20", avista: "ou R$ 147 à vista no Pix. Parcelado no cartão com acréscimo." };
+const VENDA = { link: "https://pay.kiwify.com.br/cykdGQy", vezes: "12x de", parcela: "R$ 15,20", avista: "ou R$ 147 à vista no Pix. Parcelado no cartão com acréscimo." };
 document.documentElement.classList.add("js");
 // phones get small copies of the clips (name-m.mp4): they are shown ~170-300 px wide, so the big files only cost battery and smoothness
 const PHONE = matchMedia("(max-width: 820px)").matches;
 const small = (u) => (PHONE ? u.replace(/^(media\/(?:cena-bruto|cena-editado|fx0072-bruto|fx0072-depois|lenta-[a-z0-9-]+|mov-[a-z-]+))\.mp4/, "$1-m.mp4") : u);
 if (PHONE) document.querySelectorAll("video[src]").forEach((v) => { const u = v.getAttribute("src"), n = small(u); if (n !== u) v.setAttribute("src", n); });
 if (VENDA.link) document.querySelectorAll(".buy").forEach((a) => { a.href = VENDA.link; a.target = "_blank"; a.rel = "noopener"; });
+document.getElementById("pr-n").textContent = VENDA.vezes;
 document.getElementById("pr-main").textContent = VENDA.parcela;
 document.getElementById("pr-alt").textContent = VENDA.avista;
 
