@@ -630,7 +630,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
         <div class="pc-l">
           <img class="pc-logo" src="media/cutmidas-lockup.png" alt="CUTMIDAS">
           <div class="tg">Licença completa</div>
-          <div class="val"><b id="pr-main">R$ 147</b><span id="pr-alt">à vista ou em até 12× no cartão</span></div>
+          <div class="val"><b id="pr-main">12x de R$ 15,20</b><span id="pr-alt">ou R$ 147 à vista no Pix. Parcelado no cartão com acréscimo.</span></div>
           <a class="buy big" href="#preco">Comprar agora <span class="arr" aria-hidden="true">→</span></a>
           <p class="safe">Compra segura pela Kiwify · chave de licença por e-mail na hora</p>
         </div>
@@ -680,8 +680,12 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 <script>
 /* ---------- edit here ---------- */
 // Checkout link (Kiwify) and the price shown. The price is still a placeholder.
-const VENDA = { link: "https://pay.kiwify.com.br/cykdGQy", parcela: "R$ 147", avista: "à vista ou em até 12× no cartão" };
+const VENDA = { link: "https://pay.kiwify.com.br/cykdGQy", parcela: "12x de R$ 15,20", avista: "ou R$ 147 à vista no Pix. Parcelado no cartão com acréscimo." };
 document.documentElement.classList.add("js");
+// phones get small copies of the clips (name-m.mp4): they are shown ~170-300 px wide, so the big files only cost battery and smoothness
+const PHONE = matchMedia("(max-width: 820px)").matches;
+const small = (u) => (PHONE ? u.replace(/^(media\/(?:cena-bruto|cena-editado|fx0072-bruto|fx0072-depois|lenta-[a-z0-9-]+|mov-[a-z-]+))\.mp4/, "$1-m.mp4") : u);
+if (PHONE) document.querySelectorAll("video[src]").forEach((v) => { const u = v.getAttribute("src"), n = small(u); if (n !== u) v.setAttribute("src", n); });
 if (VENDA.link) document.querySelectorAll(".buy").forEach((a) => { a.href = VENDA.link; a.target = "_blank"; a.rel = "noopener"; });
 document.getElementById("pr-main").textContent = VENDA.parcela;
 document.getElementById("pr-alt").textContent = VENDA.avista;
@@ -720,7 +724,7 @@ document.getElementById("pr-alt").textContent = VENDA.avista;
   b.addEventListener("ended", restart);
   function setSlow(m) {
     const f = m === 4 ? "media/lenta-lenta" : `media/lenta-lenta-${m}`;
-    b.pause(); b.poster = f + ".jpg"; b.src = f + ".mp4"; b.preload = "auto"; b.load();
+    b.pause(); b.poster = f + ".jpg"; b.src = small(f + ".mp4"); b.preload = "auto"; b.load();
     cap.textContent = `Câmera lenta · ${m}× mais lento`;
     seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.m === String(m)));
     b.addEventListener("loadeddata", restart, { once: true });
@@ -929,7 +933,7 @@ function frame() {
   const phd = $("phd");
   phd.style.opacity = g >= 1 ? 1 : 0;
   phd.style.left = `calc(26px + (100% - 26px) * ${t / T})`;
-  if (!vEdit.paused && !vRaw.seeking && Math.abs(vRaw.currentTime - t) > 0.15 && Math.abs(vRaw.currentTime - t) < T - 0.3) { try { vRaw.currentTime = t; } catch (e) {} }
+  if (!vEdit.paused && !vRaw.seeking && Math.abs(vRaw.currentTime - t) > 0.35 && Math.abs(vRaw.currentTime - t) < T - 0.3) { try { vRaw.currentTime = t; } catch (e) {} }
 }
 
 /* ---------- the run: plays by itself at the top, again and again while it is on screen ---------- */
