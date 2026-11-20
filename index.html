@@ -399,6 +399,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--green); outline
 footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var(--dim); font-size: 13px; display: flex; flex-wrap: wrap; gap: 10px 26px; justify-content: space-between; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } .marq-v { overflow-x: auto; } }
+/* Safari: blur over a playing video and clipped rounded corners on video repaint every frame. Solid colors, own layers. */
+.top, .pill, .snd, .clip .zoom { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.top { background: rgba(10, 11, 10, .94) !important; }
+.pill { background: rgba(10, 11, 10, .82) !important; } .snd { background: rgba(10, 11, 10, .78) !important; } .clip .zoom { background: rgba(0, 0, 0, .66) !important; }
+.ph, .mv .scr, .clip { transform: translateZ(0); isolation: isolate; }
+video { transition: none !important; will-change: auto; }
 </style>
 </head>
 <body>
