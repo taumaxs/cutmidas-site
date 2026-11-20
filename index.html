@@ -405,6 +405,11 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 .pill { background: rgba(10, 11, 10, .82) !important; } .snd { background: rgba(10, 11, 10, .78) !important; } .clip .zoom { background: rgba(0, 0, 0, .66) !important; }
 .ph, .mv .scr, .clip { transform: translateZ(0); isolation: isolate; }
 video { transition: none !important; will-change: auto; }
+/* Light mode: big blurred shadows around video frames cost a repaint on every frame in Safari. Thin ring only. */
+.ph, .mv .scr, .sty-sec .ph, .pr-ph .ph, .av video { box-shadow: 0 0 0 1px rgba(255, 255, 255, .12) !important; }
+.pr-ph.after .ph { box-shadow: 0 0 0 1px rgba(31, 209, 122, .6) !important; }
+.marq-t { animation-play-state: paused; } .marq-v.on .marq-t { animation-play-state: running; }
+.marq-v { -webkit-mask-image: none !important; mask-image: none !important; }
 </style>
 </head>
 <body>
@@ -1068,6 +1073,21 @@ $("snd").addEventListener("click", () => setSound(vEdit.muted));
 /* ---------- title strip: loop seamlessly ---------- */
 const mq = $("marq"); mq.innerHTML += mq.innerHTML;
 mq.querySelectorAll(".tt").forEach((el, k) => { if (k >= 5) el.setAttribute("aria-hidden", "true"); });
+
+/* ---------- governor: only videos near the middle of the screen play; the rest are paused (Safari / phones decode few at once) ---------- */
+(function () {
+  if ("IntersectionObserver" in window) { const mo = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle("on", e.isIntersecting))); document.querySelectorAll(".marq-v").forEach((m) => mo.observe(m)); }
+  const lbOpen = () => { const d = document.getElementById("lb"); return d && d.open; };
+  setInterval(() => {
+    if (document.hidden) return;
+    const H = innerHeight, lo = H * 0.18, hi = H * 0.82;
+    document.querySelectorAll("video:not(#lb-v)").forEach((v) => {
+      const r = v.getBoundingClientRect(), inBand = r.bottom > lo && r.top < hi && r.width > 0;
+      if (!inBand && !v.paused) { v.pause(); v._gov = true; }
+      else if (inBand && v.paused && v._gov && !lbOpen()) { v._gov = false; v.play().catch(() => {}); }
+    });
+  }, 350);
+})();
 </script>
 </body>
 </html>
