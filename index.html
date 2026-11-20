@@ -677,7 +677,6 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 44px; color: var
 <footer><span class="f-brand"><img src="media/cutmidas-lockup.png" alt="CUTMIDAS"><em>@taumaxs by TURGGO</em></span><span>Adobe e Premiere Pro são marcas da Adobe Inc. Este produto não é afiliado nem endossado pela Adobe.</span></footer>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 /* ---------- edit here ---------- */
 // Checkout link (Kiwify) and the price shown. The price is still a placeholder.
@@ -776,7 +775,8 @@ const ease = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 /* ---------- smooth scroll ---------- */
 let lenis = null;
 const touch = matchMedia("(pointer: coarse)").matches;
-if (!reduce && !touch && window.Lenis) {
+// native scrolling only: the JS smoother (Lenis) fought the Mac trackpad inertia and made the videos judder
+if (false && !reduce && !touch && window.Lenis) {
   lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
   const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
   requestAnimationFrame(raf);
